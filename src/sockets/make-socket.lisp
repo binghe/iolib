@@ -333,7 +333,12 @@ call CLOSE with :ABORT T on `VAR'."
 (defmacro with-open-socket ((var &rest args) &body body)
   "Bind VAR to a socket created by passing ARGS to MAKE-SOCKET and execute BODY as implicit PROGN.
 The socket is automatically closed upon exit."
-  `(with-open-stream (,var (make-socket ,@args)) ,@body))
+  (cond ((eq :stream (getf args :type :stream))
+         `(with-open-stream (,var (make-socket ,@args)) ,@body))
+        (t
+         `(let ((,var (make-socket ,@args)))
+            (unwind-protect (progn ,@body)
+	      (close ,var))))))
 
 (defmacro with-accept-connection ((var passive-socket &rest args) &body body)
   "Bind VAR to a socket created by passing PASSIVE-SOCKET and ARGS to ACCEPT-CONNECTION and execute BODY as implicit PROGN.

@@ -163,10 +163,17 @@
   (declare (ignore abort))
   (setf (slot-value socket 'bound) nil))
 
-(defmethod close ((socket socket) &key abort)
+(defmethod close ((socket stream-socket) &key abort)
   (declare (ignore abort))
   (when (next-method-p)
     (call-next-method))
+  (socket-open-p socket))
+
+(defmethod close ((socket datagram-socket) &key abort)
+  (declare (ignore abort))
+  (when (fd-of socket)
+    (%close (fd-of socket))
+    (setf (fd-of socket) nil))
   (socket-open-p socket))
 
 (defmethod close :before ((socket passive-socket) &key abort)
@@ -546,7 +553,7 @@
         (ub8-sarray
          (setf nbytes (%do-recvfrom buffer start (- end start))))
         ((or ub8-vector (vector t))
-         (let ((tmpbuff (make-array (- end start) :element-type 'ub8)))
+         (let ((tmpbuff (make-static-array (- end start) :element-type 'ub8)))
            (setf nbytes (%do-recvfrom tmpbuff 0 (- end start)))
            (replace buffer tmpbuff :start1 start :end1 end :start2 0 :end2 nbytes))))
       (values nbytes))))
@@ -559,7 +566,7 @@
        (call-next-method socket :buffer buffer :start start :end end :flags flags-val))
       (t
        (check-type size unsigned-byte "a non-negative integer")
-       (call-next-method socket :buffer (make-array size :element-type 'ub8)
+       (call-next-method socket :buffer (make-static-array size :element-type 'ub8)
                          :start 0 :end size :flags flags-val)))))
 
 (defmethod receive-from ((socket stream-socket) &key buffer start end flags)

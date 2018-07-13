@@ -91,6 +91,9 @@
   (optval  :pointer)
   (optlen  socklen-t))
 
+(define-socket-call (%close "close") :int
+  (socket :int))
+
 (define-socket-call (%shutdown "shutdown") :int
   (socket :int)
   (how    :int))
