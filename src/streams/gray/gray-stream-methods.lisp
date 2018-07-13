@@ -256,8 +256,17 @@
            (%stream-unread-char stream)
            char))))
 
-;; (defmethod stream-read-line ((stream dual-channel-gray-stream))
-;;   )
+(defmethod stream-read-line ((stream dual-channel-gray-stream))
+  (let ((line (make-array 64 :element-type 'character
+			  :fill-pointer 0 :adjustable t)))
+    (loop
+      (let ((character (stream-read-char stream)))
+	(cond ((eq character :eof)
+	       (return (values line t)))
+	      ((eql character #\Newline)
+	       (return (values line nil)))
+	      ((not (eql character #\Return)) ; ignore #\Return (\r)
+	       (vector-push-extend character line)))))))
 
 (defmethod stream-listen ((stream dual-channel-gray-stream))
   (let ((char (stream-read-char-no-hang stream)))
