@@ -46,3 +46,10 @@
      (if (zerop (length string))
          nil
          string))))
+
+;; LispWorks' fli:with-dynamic-lisp-array-pointer function needs arrays to be
+;; allocated in static area, otherwise array pointer cannot pass to C.
+;; -- Chun Tian (binghe), July 13, 2018.
+
+(defmacro make-static-array (&rest args)
+  `(make-array ,@args #+lispworks :allocation #+lispworks :static))

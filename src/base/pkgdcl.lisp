@@ -85,4 +85,5 @@
    #:dynamic-buffer-input-error
    #:dynamic-buffer-eof
    #:dynamic-buffer-index-out-of-bounds
+   #:make-static-array
    ))
