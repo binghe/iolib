@@ -84,10 +84,10 @@
                    (authority dns-message-authority) (additional dns-message-additional))
       msg
     (setf decoded-flags (decode-flags msg)
-          question      (make-array qdcount :adjustable t :fill-pointer 0)
-          answer        (make-array ancount :adjustable t :fill-pointer 0)
-          authority     (make-array nscount :adjustable t :fill-pointer 0)
-          additional    (make-array arcount :adjustable t :fill-pointer 0))))
+          question      (make-static-array qdcount :adjustable t :fill-pointer 0)
+          answer        (make-static-array ancount :adjustable t :fill-pointer 0)
+          authority     (make-static-array nscount :adjustable t :fill-pointer 0)
+          additional    (make-static-array arcount :adjustable t :fill-pointer 0))))
 
 (defmethod print-object ((msg dns-message) stream)
   (print-unreadable-object (msg stream :type nil :identity nil)

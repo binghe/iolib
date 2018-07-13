@@ -235,7 +235,7 @@
       (error 'socket-connection-timeout-error)))
 
 (defun send-tcp-dns-query (socket buffer length)
-  (let ((minibuf (make-array (+ length 2) :element-type 'ub8)))
+  (let ((minibuf (make-static-array (+ length 2) :element-type 'ub8)))
     ;; two-octet length prefix
     (replace minibuf (ub16-to-vector length))
     (replace minibuf buffer :start1 2 :end2 length)
@@ -251,7 +251,7 @@
 (defun receive-tcp-dns-message (socket time-fn)
   (with-accessors ((fd fd-of)) socket
     (let* ((message-length (get-tcp-query-length socket (funcall time-fn)))
-           (input-buffer (make-array message-length :element-type 'ub8)))
+           (input-buffer (make-static-array message-length :element-type 'ub8)))
       (loop :with off := 0 :do
          (iomux:wait-until-fd-ready fd :input (funcall time-fn) t)
          (let ((inbytes (nth-value 1 (receive-from socket :buffer input-buffer :start off))))

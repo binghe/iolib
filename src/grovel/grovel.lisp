@@ -288,7 +288,7 @@ int main(int argc, char**argv) {
    #+ecl (parse-command-line c::*cc-flags*)
    (fcase
      ;; For MacPorts
-     (:darwin '("-I" "/opt/local/include/"))
+     (:darwin '("-I" "/usr/local/include/"))
      ;; FreeBSD non-base header files
      ;; DragonFly Dports install software in /usr/local
      ;; And what about pkgsrc?

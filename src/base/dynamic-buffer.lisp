@@ -16,11 +16,11 @@
                                        &key (size 256) sequence (start 0) end)
   (etypecase sequence
     (null
-     (setf (sequence-of buffer) (make-array size :element-type 'ub8)))
+     (setf (sequence-of buffer) (make-static-array size :element-type 'ub8)))
     (ub8-vector
      (check-bounds sequence start end)
      (let* ((sequence-size (- end start))
-            (newseq (make-array sequence-size :element-type 'ub8)))
+            (newseq (make-static-array sequence-size :element-type 'ub8)))
        (replace newseq sequence :start2 start :end2 end)
        (setf (sequence-of buffer)     newseq
              (write-cursor-of buffer) sequence-size)))))
@@ -123,7 +123,7 @@
                    (rcursor read-cursor-of))
       buffer
     (let* ((bytes-to-read (min (unread-bytes buffer) length))
-           (newvector (make-array bytes-to-read :element-type 'ub8)))
+           (newvector (make-static-array bytes-to-read :element-type 'ub8)))
       (replace newvector seq :start2 rcursor)
       (incf rcursor bytes-to-read)
       (values newvector))))
