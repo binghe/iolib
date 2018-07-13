@@ -275,20 +275,38 @@
 ;;; Character Output
 ;;;-------------------------------------------------------------------------
 
+#+lispworks
+(defparameter *static-lf*
+  (let ((octets #.(map 'ub8-sarray #'char-code '(#\Linefeed))))
+    (make-static-array (length octets)
+                       :element-type 'ub8 :initial-contents octets)))
+
 (defun stream-write-lf (stream)
   (declare (type dual-channel-gray-stream stream))
   (let ((octets #.(map 'ub8-sarray #'char-code '(#\Linefeed))))
-    (%write-simple-array-ub8 stream octets 0 1)))
+    (%write-simple-array-ub8 stream #+lispworks *static-lf* #-lispworks octets 0 1)))
+
+#+lispworks
+(defparameter *static-crlf*
+  (let ((octets #.(map 'ub8-sarray #'char-code '(#\Return #\Linefeed))))
+    (make-static-array (length octets)
+                       :element-type 'ub8 :initial-contents octets)))
 
 (defun stream-write-crlf (stream)
   (declare (type dual-channel-gray-stream stream))
   (let ((octets #.(map 'ub8-sarray #'char-code '(#\Return #\Linefeed))))
-    (%write-simple-array-ub8 stream octets 0 2)))
+    (%write-simple-array-ub8 stream #+lispworks *static-crlf* #-lispworks octets 0 2)))
+
+#+lispworks
+(defparameter *static-cr*
+  (let ((octets #.(map 'ub8-sarray #'char-code '(#\Return))))
+    (make-static-array (length octets)
+                       :element-type 'ub8 :initial-contents octets)))
 
 (defun stream-write-cr (stream)
   (declare (type dual-channel-gray-stream stream))
   (let ((octets #.(map 'ub8-sarray #'char-code '(#\Return))))
-    (%write-simple-array-ub8 stream octets 0 1)))
+    (%write-simple-array-ub8 stream #+lispworks *static-cr* #-lispworks octets 0 1)))
 
 (declaim (inline %write-string-chunk))
 (defun %write-string-chunk (stream string start end encoding)
@@ -297,6 +315,10 @@
          (octets
           (babel:string-to-octets string
                                   :start start :end chunk-end
-                                  :encoding encoding)))
-    (%write-simple-array-ub8 stream octets 0 (length octets))
+                                  :encoding encoding))
+         #+lispworks
+         (static-octets (make-static-array (length octets)
+                                           :element-type 'ub8 :initial-contents octets)))
+    (%write-simple-array-ub8 stream #+lispworks static-octets #-lispworks octets
+                             0 (length octets))
     chunk-end))
