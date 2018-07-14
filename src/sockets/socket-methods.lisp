@@ -163,13 +163,7 @@
   (declare (ignore abort))
   (setf (slot-value socket 'bound) nil))
 
-(defmethod close ((socket stream-socket) &key abort)
-  (declare (ignore abort))
-  (when (next-method-p)
-    (call-next-method))
-  (socket-open-p socket))
-
-(defmethod close ((socket datagram-socket) &key abort)
+(defmethod close ((socket socket) &key abort)
   (declare (ignore abort))
   (when (fd-of socket)
     (%close (fd-of socket))
