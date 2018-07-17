@@ -10,6 +10,8 @@
 
 ;; FIXME: move this into an ASDF operation
 (eval-when (:compile-toplevel :load-toplevel :execute)
+  (pushnew #p"/usr/local/lib/" cffi:*foreign-library-directories*
+           :test #'equal)
   (define-foreign-library libfixposix
     (t (:default "libfixposix")))
   (use-foreign-library libfixposix))
